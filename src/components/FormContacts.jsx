@@ -1,34 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Form, Input, Button, Typography} from 'antd';
+import { UserAddOutlined } from '@ant-design/icons';
 
-export default function FormContacts({ addContact, currentUser }) {
+export default function FormContacts({ addContact }) {
   return (
-    <form onSubmit={addContact}>
-      <fieldset id="fieldset">
-        <p>Hey, { currentUser.accountId }! Add a new contact</p>
-        <p className="highlight">
-          <label htmlFor="name">Name:</label>
-          <input
+
+    <Form name="horizontal_login" layout="inline" onFinish={addContact}>
+        <Form.Item name="name" rules={[{ required: true }]}>
+          <Input
             autoComplete="off"
             autoFocus
-            id="name"
+            placeholder="Name"
             required
           />
-        </p>
-        <p className="highlight">
-          <label htmlFor="accountId">Contact's Account Id:</label>
-          <input
+        </Form.Item>
+        <Form.Item name="contactId" rules={[{ required: true }]}>
+          <Input
             autoComplete="off"
             autoFocus
-            id="contactId"
+            placeholder="Account ID"
             required
           />
-        </p>
-        <button type="submit">
-          Sign
-        </button>
-      </fieldset>
-    </form>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" icon={<UserAddOutlined />} />
+        </Form.Item>
+    </Form>
   );
 }
 

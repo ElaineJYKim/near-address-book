@@ -1,15 +1,13 @@
 import 'regenerator-runtime/runtime';
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Big from 'big.js';
-import Form from './components/Form';
 import FormContacts from './components/FormContacts';
-import SignIn from './components/SignIn';
-import Messages from './components/Messages';
 import Contacts from './components/Contacts';
 
-const SUGGESTED_DONATION = '0';
-const BOATLOAD_OF_GAS = Big(3).times(10 ** 13).toFixed();
+import { PageHeader, Button } from 'antd';
+import { Card, Row, Col, Space, Divider, Typography } from 'antd';
+const { Text } = Typography;
+
 
 const App = ({ contract, currentUser, nearConfig, wallet }) => {
   const [contacts, setContacts] = useState([]);
@@ -23,24 +21,22 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     }
   }, []);
 
-  const onAddContact = (e) => {
-    e.preventDefault();
+  const onAddContact = (values) => {
+    console.log(values)
     console.log("ADDING CONTACT")
-    const { fieldset, name, contactId } = e.target.elements;
-    fieldset.disabled = true;
+    const name = values.name;
+    const contactId = values.contactId;
 
     contract.addContact(
-      {name: name.value, contactId: contactId.value}
+      {name: name, contactId: contactId}
     ).then(() => {
       contract.getContacts(
         {accountId: currentUser.accountId}
         ).then(contacts => {
           console.log(contacts)
           setContacts(contacts);
-          name.value = '';
-          contactId.value = '';
-          fieldset.disabled = false;
-          name.focus();
+          name = '';
+          contactId = '';
         });
     });
   };
@@ -74,22 +70,37 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
 
   return (
     <main>
-      <header>
-        <h1>NEAR Guest Book</h1>
-        { currentUser
-          ? <button onClick={signOut}>Log out</button>
-          : <button onClick={signIn}>Log in</button>
+      <Card style={{ "width": "500",  "boxShadow": "0 6px 12px 0 rgba(0,0,0,0.2)"}}>
+
+        <PageHeader 
+          title="Address Book" 
+          subTitle="Powered by NEAR"
+          extra={ currentUser
+            ? <Button type="primary" onClick={signOut}>Log out</Button>
+            : <Button type="primary" onClick={signIn}>Log in</Button>
+          }
+        />
+
+        {!! currentUser &&
+          <Row>
+
+            <Space 
+              direction="vertical" 
+              split={
+                <Divider><Text disabled>{currentUser.accountId}</Text></Divider>
+              }
+            >
+
+            <FormContacts addContact={onAddContact}/>
+            
+            { !!contacts.length && 
+              <Contacts contacts={contacts} onDelete={onDeleteContact}/>
+            }
+            </Space>
+          </Row>
         }
-      </header>
-      { currentUser
-        ? <div>
-            <FormContacts addContact={onAddContact} currentUser={currentUser}/>
-          </div>
-        : <SignIn/>
-      }
-      { !!currentUser && !!contacts.length && 
-        <Contacts contacts={contacts} onDelete={onDeleteContact}/>
-      }
+
+      </Card>
     </main>
   );
 };

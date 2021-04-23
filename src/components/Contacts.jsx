@@ -1,17 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { SmileTwoTone, DeleteOutlined, CopyOutlined } from '@ant-design/icons';
+import { List, Button } from 'antd';
 
 export default function Contacts({ contacts, onDelete }) {
   return (
-    <>
-      <h2>Contacts</h2>
-      {contacts.map((contact, i) =>
-        <p key={i}>
-          <strong>{contact.name}</strong>: {contact.contactId} 
-          <button type="button" onClick={() => onDelete(contact.contactId)}>delete</button>
-        </p>
-      )}
-    </>
+
+    <List
+    itemLayout="horizontal"
+    dataSource={contacts}
+    renderItem={contact => (
+      <List.Item
+        actions={[
+          <DeleteOutlined  style={{ color: "#FF585D" }} onClick={() => onDelete(contact.contactId)} />,
+          <CopyOutlined style={{ color: "#00C08B" }} onClick={() => {navigator.clipboard.writeText(contact.contactId)}} />
+        ]}
+      >
+        <List.Item.Meta
+          avatar={<SmileTwoTone twoToneColor="#0072CE" />}
+          title={contact.name}
+          description={contact.contactId}
+        />
+      </List.Item>
+    )}
+  />
   );
 }
 
