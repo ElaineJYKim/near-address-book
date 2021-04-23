@@ -6,7 +6,7 @@ import {
   contactsByOwner 
 } from './model';
 import { AccountId, Name, ContactKey } from './types'
-import { Context } from "near-sdk-as";
+import { Context, logging } from "near-sdk-as";
 
 /************/
 /* Changers */
@@ -22,7 +22,6 @@ export function addContact(name: Name, contactId: AccountId): void {
   const sender = Context.sender;
   const newContact = new Contact(name, contactId);
   
-
   // add to contacts
   contacts.set(key, newContact);
 
@@ -58,12 +57,12 @@ export function deleteContact(contactId: AccountId): void {
 /************/
 
 // Returns array of contact keys used to access contacts.
-export function getContactKeys(): Array<string> {
+export function getContactKeys(): Array<ContactKey> {
  
   const owner = Context.sender;
   let contactsIdList = contactsByOwner.get(owner);
   if (!contactsIdList) {
-    return new Array<string>();
+    return new Array<ContactKey>();
   }
   return contactsIdList.ids;
 
@@ -72,16 +71,17 @@ export function getContactKeys(): Array<string> {
 // Return array of Contacts for current user
 export function getContacts(accountId: AccountId): Array<Contact> {
   
-  const owner = _extract_id(accountId);
+  //const owner = _extract_id(accountId);
+  const owner = accountId;
   
-  let keys = new Array<string>();
+  let keys = new Array<ContactKey>();
   const contactsIdList = contactsByOwner.get(owner);
   if (contactsIdList) {
     keys = contactsIdList.ids;
   }
   
   const len = keys.length;
-  let contactsList = new Array<Contact>(len);
+  let contactsList = new Array<Contact>();
 
   for (let i = 0; i < len; i++) {
     contactsList.push(contacts.getSome(keys[i]));

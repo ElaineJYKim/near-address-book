@@ -1,15 +1,9 @@
 import { Context, u128, PersistentVector, PersistentMap } from "near-sdk-as";
 import { AccountId, Name, ContactKey } from './types'
 
-export enum EditKind {
-  Name,
-  ContactId,
-  Both
-}
-
 @nearBindgen
 export class ContactIds {
-  constructor(public ids: Array<string>) {}
+  constructor(public ids: Array<ContactKey>) {}
 }
 
 @nearBindgen
