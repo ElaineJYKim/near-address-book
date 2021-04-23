@@ -36,14 +36,14 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     ).then(() => {
       contract.getContacts(
         {accountId: currentUser.accountId}
-      ).then(contacts => {
-        console.log(contacts)
-        setContacts(contacts);
-        name.value = '';
-        contactId.value = '';
-        fieldset.disabled = false;
-        name.focus();
-      });
+        ).then(contacts => {
+          console.log(contacts)
+          setContacts(contacts);
+          name.value = '';
+          contactId.value = '';
+          fieldset.disabled = false;
+          name.focus();
+        });
     });
   };
 
@@ -101,12 +101,8 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
           </div>
         : <SignIn/>
       }
-      { !!currentUser && !!messages.length && 
-        <div>
-          <Contacts contacts={contacts}/>
-          <Messages messages={messages}/>
-        </div>
-      }
+      { !!currentUser && !!messages.length && <Messages messages={messages}/>}
+      { !!currentUser && !!contacts.length && <Contacts contacts={contacts}/>}
     </main>
   );
 };

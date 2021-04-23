@@ -6,9 +6,8 @@ export default function Contacts({ contacts }) {
     <>
       <h2>Contacts</h2>
       {contacts.map((contact, i) =>
-        <p>
-          <strong>{contact.name}</strong>:<br/>
-          {contact.accountId}
+        <p key={i}>
+          <strong>{contact.name}</strong>: {contact.contactId}
         </p>
       )}
     </>
