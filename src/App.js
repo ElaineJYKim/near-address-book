@@ -12,12 +12,10 @@ const SUGGESTED_DONATION = '0';
 const BOATLOAD_OF_GAS = Big(3).times(10 ** 13).toFixed();
 
 const App = ({ contract, currentUser, nearConfig, wallet }) => {
-  const [messages, setMessages] = useState([]);
   const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
     // TODO: don't just fetch once; subscribe!
-    contract.getMessages().then(setMessages);
     if (currentUser) {
       contract.getContacts(
         {accountId: currentUser.accountId}
@@ -47,30 +45,19 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     });
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const onDeleteContact = (contactId) => {
+    console.log("DELETING CONTACT: ", contactId);
 
-    const { fieldset, message, donation } = e.target.elements;
-
-    fieldset.disabled = true;
-
-    // TODO: optimistically update page with new message,
-    // update blockchain data in background
-    // add uuid to each message, so we know which one is already known
-    contract.addMessage(
-      { text: message.value },
-      BOATLOAD_OF_GAS,
-      Big(donation.value || '0').times(10 ** 24).toFixed()
+    contract.deleteContact(
+      {contactId: contactId}
     ).then(() => {
-      console.log("Loading new messages")
-      contract.getMessages().then(messages => {
-        setMessages(messages);
-        message.value = '';
-        donation.value = SUGGESTED_DONATION;
-        fieldset.disabled = false;
-        message.focus();
-      });
-    });
+      contract.getContacts(
+        {accountId: currentUser.accountId}
+      ).then(contacts => {
+        console.log(contacts);
+        setContacts(contacts);
+      })
+    })
   };
 
   const signIn = () => {
@@ -96,21 +83,19 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
       </header>
       { currentUser
         ? <div>
-            <Form onSubmit={onSubmit} currentUser={currentUser} />
             <FormContacts addContact={onAddContact} currentUser={currentUser}/>
           </div>
         : <SignIn/>
       }
-      { !!currentUser && !!messages.length && <Messages messages={messages}/>}
-      { !!currentUser && !!contacts.length && <Contacts contacts={contacts}/>}
+      { !!currentUser && !!contacts.length && 
+        <Contacts contacts={contacts} onDelete={onDeleteContact}/>
+      }
     </main>
   );
 };
 
 App.propTypes = {
   contract: PropTypes.shape({
-    addMessage: PropTypes.func.isRequired,
-    getMessages: PropTypes.func.isRequired,
     addContact: PropTypes.func.isRequired,
     getContacts: PropTypes.func.isRequired
   }).isRequired,
