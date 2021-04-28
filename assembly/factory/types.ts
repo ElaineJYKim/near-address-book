@@ -1,0 +1,1 @@
+export const FACTORY_KEY = "state"
